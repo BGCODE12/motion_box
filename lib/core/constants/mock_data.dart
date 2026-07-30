@@ -1,0 +1,143 @@
+class MockData {
+  static const List<Map<String, dynamic>> carouselItems = [
+    {
+      'id': 'promo-1',
+      'title': 'Create Stunning Cinematic Intros',
+      'subtitle': 'Explore our brand new neon and cyberpunk motion graphics suites.',
+      'imageUrl': 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80',
+      'tag': 'New Release',
+      'actionText': 'Get Started',
+    },
+    {
+      'id': 'promo-2',
+      'title': 'Epic Sound FX Integration',
+      'subtitle': 'Elevate your projects with high-fidelity, studio-grade background audio.',
+      'imageUrl': 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80',
+      'tag': 'Pro Feature',
+      'actionText': 'Unlock Audio',
+    },
+    {
+      'id': 'promo-3',
+      'title': 'Brand Kit Toolkit v2.0',
+      'subtitle': 'Apply consistent animations, logos, and layouts in one simple tap.',
+      'imageUrl': 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80',
+      'tag': 'Trending',
+      'actionText': 'Explore Brands',
+    },
+  ];
+
+  static const List<Map<String, dynamic>> designTemplates = [
+    {
+      'id': 'tpl-1',
+      'title': 'Cyberpunk Title Stinger',
+      'category': 'VFX & Titles',
+      'imageUrl': 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80',
+      'duration': '0:15',
+      'likes': 1420,
+      'rating': 4.9,
+      'isFavorite': true,
+      'author': 'Studio Neon',
+    },
+    {
+      'id': 'tpl-2',
+      'title': 'Elegant Gold Wedding Intro',
+      'category': 'Cinematic',
+      'imageUrl': 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80',
+      'duration': '0:30',
+      'likes': 982,
+      'rating': 4.8,
+      'isFavorite': false,
+      'author': 'Vow Aesthetics',
+    },
+    {
+      'id': 'tpl-3',
+      'title': 'Dynamic Split-Screen Promo',
+      'category': 'Social Media',
+      'imageUrl': 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=600&q=80',
+      'duration': '0:08',
+      'likes': 2341,
+      'rating': 4.7,
+      'isFavorite': true,
+      'author': 'AdGenie',
+    },
+    {
+      'id': 'tpl-4',
+      'title': 'Minimal Grid Logo Reveal',
+      'category': 'Brands',
+      'imageUrl': 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
+      'duration': '0:05',
+      'likes': 560,
+      'rating': 4.6,
+      'isFavorite': false,
+      'author': 'ShapeLabs',
+    },
+    {
+      'id': 'tpl-5',
+      'title': 'Retro Synthwave Loop',
+      'category': 'Backgrounds',
+      'imageUrl': 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80',
+      'duration': '1:00',
+      'likes': 3102,
+      'rating': 4.9,
+      'isFavorite': true,
+      'author': '80sVibe',
+    },
+    {
+      'id': 'tpl-6',
+      'title': 'Tech Product Showcase HUD',
+      'category': 'Tech/HUD',
+      'imageUrl': 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80',
+      'duration': '0:22',
+      'likes': 876,
+      'rating': 4.5,
+      'isFavorite': false,
+      'author': 'CyberCore',
+    },
+  ];
+
+  static const List<Map<String, dynamic>> layoutTemplates = [
+    {
+      'id': 'layout-1',
+      'name': '2-Split Vertical',
+      'thumbnail': 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80',
+      'aspectRatio': 0.5625,
+      'slots': [
+        {'id': 'slot-1', 'left': 0.0, 'top': 0.0, 'width': 1.0, 'height': 0.5, 'type': 'video'},
+        {'id': 'slot-2', 'left': 0.0, 'top': 0.5, 'width': 1.0, 'height': 0.5, 'type': 'video'},
+      ],
+    },
+    {
+      'id': 'layout-2',
+      'name': '3-Split Horizontal',
+      'thumbnail': 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=600&q=80',
+      'aspectRatio': 0.5625,
+      'slots': [
+        {'id': 'slot-1', 'left': 0.0, 'top': 0.0, 'width': 0.333, 'height': 1.0, 'type': 'image'},
+        {'id': 'slot-2', 'left': 0.333, 'top': 0.0, 'width': 0.333, 'height': 1.0, 'type': 'image'},
+        {'id': 'slot-3', 'left': 0.666, 'top': 0.0, 'width': 0.334, 'height': 1.0, 'type': 'image'},
+      ],
+    },
+    {
+      'id': 'layout-3',
+      'name': '4-Grid Square',
+      'thumbnail': 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80',
+      'aspectRatio': 0.5625,
+      'slots': [
+        {'id': 'slot-1', 'left': 0.0, 'top': 0.0, 'width': 0.5, 'height': 0.5, 'type': 'image'},
+        {'id': 'slot-2', 'left': 0.5, 'top': 0.0, 'width': 0.5, 'height': 0.5, 'type': 'image'},
+        {'id': 'slot-3', 'left': 0.0, 'top': 0.5, 'width': 0.5, 'height': 0.5, 'type': 'image'},
+        {'id': 'slot-4', 'left': 0.5, 'top': 0.5, 'width': 0.5, 'height': 0.5, 'type': 'image'},
+      ],
+    },
+    {
+      'id': 'layout-4',
+      'name': 'PIP (Picture in Picture)',
+      'thumbnail': 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=600&q=80',
+      'aspectRatio': 0.5625,
+      'slots': [
+        {'id': 'slot-1', 'left': 0.0, 'top': 0.0, 'width': 1.0, 'height': 1.0, 'type': 'video'},
+        {'id': 'slot-2', 'left': 0.6, 'top': 0.6, 'width': 0.35, 'height': 0.35, 'type': 'image'},
+      ],
+    },
+  ];
+}
