@@ -7,7 +7,7 @@ import '../models/timeline_models.dart';
 
 /// Live Audio Synchronization Manager — Performance-Optimized.
 ///
-/// KEY FIXES applied here:
+/// KEY NOTES applied here:
 /// 1. NO longer listens to `currentPositionMs` (60fps ValueNotifier).
 ///    Instead, uses a low-frequency 8Hz Timer (every 125ms) for sync checks.
 /// 2. `setVolume()` is only called once when volume CHANGES, not on every tick.
@@ -27,7 +27,7 @@ class LiveAudioSyncManager {
   bool _wasPlaying = false;
   bool _wasDragging = false;
 
-  // BUG-08 FIX: Guard flag to prevent re-entrant concurrent sync calls.
+  // BUG-08 NOTE: Guard flag to prevent re-entrant concurrent sync calls.
   // _syncAudioStreams is async (has awaits for player init/seek/play).
   // Without this, the 125ms timer can fire a second invocation before the
   // first completes, causing concurrent mutations of _audioPlayers map.
@@ -38,17 +38,17 @@ class LiveAudioSyncManager {
   }
 
   void _init() {
-    // FIX #1: Listen to controller (ChangeNotifier) for state changes only.
+    // NOTE #1: Listen to controller (ChangeNotifier) for state changes only.
     // We do NOT listen to currentPositionMs ValueNotifier (60fps).
     _controllerListener = _onControllerStateChanged;
     controller.addListener(_controllerListener!);
 
-    // BUG-12 FIX: Register forceSync() so deleteClip() can trigger an
+    // BUG-12 NOTE: Register forceSync() so deleteClip() can trigger an
     // immediate audio player teardown without waiting for the 125ms timer.
     controller.clipDeletedCallback = forceSync;
 
-    // FIX #2: Use 8Hz (125ms) timer for sync checks during playback.
-    // BUG-08 FIX: Skip if previous sync is still in progress (_isSyncing guard).
+    // NOTE #2: Use 8Hz (125ms) timer for sync checks during playback.
+    // BUG-08 NOTE: Skip if previous sync is still in progress (_isSyncing guard).
     _syncTimer = Timer.periodic(const Duration(milliseconds: 125), (_) {
       if (!_isSyncing) {
         _syncAudioStreams(isForcedSync: false);
@@ -85,7 +85,7 @@ class LiveAudioSyncManager {
   }
 
   Future<void> _syncAudioStreams({required bool isForcedSync}) async {
-    // BUG-08 FIX: Skip re-entrant calls. Forced syncs (play/pause/drag-end)
+    // BUG-08 NOTE: Skip re-entrant calls. Forced syncs (play/pause/drag-end)
     // are allowed to interrupt a polling sync; they set _isSyncing themselves.
     if (_isSyncing && !isForcedSync) return;
     _isSyncing = true;
@@ -157,7 +157,7 @@ class LiveAudioSyncManager {
 
       if (!player.value.isInitialized) continue;
 
-      // FIX #3: Only call setVolume() when volume actually changes — not on every tick
+      // NOTE #3: Only call setVolume() when volume actually changes — not on every tick
       final targetVolume = clip.volume.clamp(0.0, 2.0);
       if ((_lastKnownVolume[clip.id] ?? -1) != targetVolume) {
         await player.setVolume(targetVolume);
@@ -175,12 +175,12 @@ class LiveAudioSyncManager {
           await player.seekTo(Duration(milliseconds: relativeAudioMs.toInt()));
           await player.play();
         } else if (isForcedSync) {
-          // FIX #4: Drift correction ONLY runs during forced syncs (play start / drag end),
+          // NOTE #4: Drift correction ONLY runs during forced syncs (play start / drag end),
           // NOT on the 8Hz polling timer during normal uninterrupted playback.
           final playerPosMs = player.value.position.inMilliseconds.toDouble();
           final drift = (playerPosMs - relativeAudioMs).abs();
           if (drift > 200) {
-            debugPrint('=> [Live Audio Drift Fix] Correcting ${drift.toStringAsFixed(0)}ms drift for clip ${clip.title}');
+            debugPrint('=> [Live Audio Drift Correction] Correcting ${drift.toStringAsFixed(0)}ms drift for clip ${clip.title}');
             await player.seekTo(Duration(milliseconds: relativeAudioMs.toInt()));
           }
         }
@@ -200,11 +200,11 @@ class LiveAudioSyncManager {
     if (_controllerListener != null) {
       controller.removeListener(_controllerListener!);
     }
-    // BUG-12 FIX: Clear the callback so the controller no longer holds
+    // BUG-12 NOTE: Clear the callback so the controller no longer holds
     // a reference to this (potentially already disposed) manager.
     controller.clipDeletedCallback = null;
     for (final player in _audioPlayers.values) {
-      // BUG-07 FIX: pause() is intentionally fire-and-forget here.
+      // BUG-07 NOTE: pause() is intentionally fire-and-forget here.
       // VideoPlayerController.dispose() tears down the ExoPlayer instance and
       // all pending operations atomically — the pause command is not needed
       // for correctness, only to silence logcat warnings on some OEM ROMs.
