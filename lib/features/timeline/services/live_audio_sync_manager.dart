@@ -20,6 +20,7 @@ class LiveAudioSyncManager {
   final Map<String, String> _loadedPaths = {};
   final Map<String, double> _lastKnownVolume = {};
   final Set<String> _existenceCache = {}; // Cached File.existsSync results
+  final Set<String> _missingCache = {}; // Cached negative File.existsSync results
   Timer? _syncTimer;
   VoidCallback? _controllerListener;
 
@@ -107,11 +108,17 @@ class LiveAudioSyncManager {
       if (track.type == TrackType.audio) {
         for (final clip in track.clips) {
           if (clip.mediaPath == null) continue;
+
+          if (_missingCache.contains(clip.mediaPath)) {
+            continue;
+          }
+
           // Cache file existence — avoid I/O on every sync tick
           if (!_existenceCache.contains(clip.mediaPath)) {
             if (File(clip.mediaPath!).existsSync()) {
               _existenceCache.add(clip.mediaPath!);
             } else {
+              _missingCache.add(clip.mediaPath!);
               continue;
             }
           }
@@ -215,6 +222,7 @@ class LiveAudioSyncManager {
     _loadedPaths.clear();
     _lastKnownVolume.clear();
     _existenceCache.clear();
+    _missingCache.clear();
     debugPrint('=> [LiveAudioSyncManager] Disposed all audio players.');
   }
 }
