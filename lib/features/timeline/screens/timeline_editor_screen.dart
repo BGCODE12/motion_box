@@ -151,59 +151,15 @@ class _TimelineEditorScreenState extends State<TimelineEditorScreen> {
   }
 
   void _showAddTextDialog() {
-    // BUG-10 FIX: Create the TextEditingController inside a StatefulBuilder so
+    // BUG-10 FIX: Create the TextEditingController inside a StatefulWidget so
     // it gets disposed when the dialog closes, preventing the TextInputConnection
     // memory leak that occurs when the controller is created in a plain builder.
     showDialog(
       context: context,
       builder: (ctx) {
-        final textEditingController = TextEditingController(text: 'MotionBox Overlay');
-        return StatefulBuilder(
-          builder: (ctx, setDialogState) {
-            return AlertDialog(
-              backgroundColor: AppTheme.surface,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              title: const Row(
-                children: [
-                  Icon(Icons.title_rounded, color: AppTheme.primary, size: 24),
-                  SizedBox(width: 8),
-                  Text('Add Text Overlay', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                ],
-              ),
-              content: TextField(
-                controller: textEditingController,
-                autofocus: true,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Enter text...',
-                  hintStyle: const TextStyle(color: AppTheme.textMuted),
-                  filled: true,
-                  fillColor: AppTheme.surfaceVariant,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    textEditingController.dispose();
-                    Navigator.pop(ctx);
-                  },
-                  child: const Text('Cancel', style: TextStyle(color: AppTheme.textSecondary)),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    final text = textEditingController.text.trim();
-                    if (text.isNotEmpty) {
-                      _controller.addTextClip(text: text);
-                    }
-                    textEditingController.dispose();
-                    Navigator.pop(ctx);
-                  },
-                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primary),
-                  child: const Text('Add to Timeline', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            );
+        return _AddTextDialog(
+          onAdd: (text) {
+            _controller.addTextClip(text: text);
           },
         );
       },
@@ -700,5 +656,76 @@ class _TimelineEditorScreenState extends State<TimelineEditorScreen> {
     final minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
     final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
     return '$minutes:$seconds';
+  }
+}
+
+class _AddTextDialog extends StatefulWidget {
+  final ValueChanged<String> onAdd;
+
+  const _AddTextDialog({required this.onAdd});
+
+  @override
+  State<_AddTextDialog> createState() => _AddTextDialogState();
+}
+
+class _AddTextDialogState extends State<_AddTextDialog> {
+  late TextEditingController _textEditingController;
+
+  @override
+  void initState() {
+    super.initState();
+    _textEditingController = TextEditingController(text: 'MotionBox Overlay');
+  }
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: AppTheme.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      title: const Row(
+        children: [
+          Icon(Icons.title_rounded, color: AppTheme.primary, size: 24),
+          SizedBox(width: 8),
+          Text('Add Text Overlay', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+        ],
+      ),
+      content: TextField(
+        controller: _textEditingController,
+        autofocus: true,
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          hintText: 'Enter text...',
+          hintStyle: const TextStyle(color: AppTheme.textMuted),
+          filled: true,
+          fillColor: AppTheme.surfaceVariant,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel', style: TextStyle(color: AppTheme.textSecondary)),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            final text = _textEditingController.text.trim();
+            if (text.isNotEmpty) {
+              widget.onAdd(text);
+            }
+            Navigator.pop(context);
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primary),
+          child: const Text('Add to Timeline', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        ),
+      ],
+    );
   }
 }
