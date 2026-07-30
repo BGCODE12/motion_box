@@ -41,7 +41,7 @@ class TimelineController extends ChangeNotifier {
   DateTime? _lastSeekTime;
   Timer? _pendingSeekTimer;
 
-  // BUG-09 FIX: Debounce timestamp for splitClipAtPlayhead.
+  // BUG-09 NOTE: Debounce timestamp for splitClipAtPlayhead.
   // Rapid taps mutate track.clips while a ListenableBuilder frame is still
   // iterating the list — a 300ms gate prevents same-frame double-splits.
   DateTime? _lastSplitTime;
@@ -694,7 +694,7 @@ class TimelineController extends ChangeNotifier {
   }
 
   /// Split selected clip at current playhead position.
-  /// BUG-09 FIX: Debounced to 300ms to prevent rapid-tap list corruption.
+  /// BUG-09 NOTE: Debounced to 300ms to prevent rapid-tap list corruption.
   void splitClipAtPlayhead() {
     // ── Debounce gate ─────────────────────────────────────────────────────
     final now = DateTime.now();
