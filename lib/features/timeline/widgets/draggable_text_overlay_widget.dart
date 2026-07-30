@@ -46,6 +46,7 @@ class DraggableTextOverlayWidget extends StatefulWidget {
 class _DraggableTextOverlayWidgetState extends State<DraggableTextOverlayWidget> {
   late double _overlayX;
   late double _overlayY;
+  late Color _textColor;
   bool _isDragging = false;
 
   @override
@@ -53,6 +54,7 @@ class _DraggableTextOverlayWidgetState extends State<DraggableTextOverlayWidget>
     super.initState();
     _overlayX = widget.clip.overlayX;
     _overlayY = widget.clip.overlayY;
+    _textColor = _parseHexColor(widget.clip.textColorHex);
   }
 
   @override
@@ -61,6 +63,9 @@ class _DraggableTextOverlayWidgetState extends State<DraggableTextOverlayWidget>
     if (!_isDragging) {
       _overlayX = widget.clip.overlayX;
       _overlayY = widget.clip.overlayY;
+    }
+    if (oldWidget.clip.textColorHex != widget.clip.textColorHex) {
+      _textColor = _parseHexColor(widget.clip.textColorHex);
     }
   }
 
@@ -76,8 +81,6 @@ class _DraggableTextOverlayWidgetState extends State<DraggableTextOverlayWidget>
 
   @override
   Widget build(BuildContext context) {
-    final color = _parseHexColor(widget.clip.textColorHex);
-
     // Convert fractional position to pixel position
     // overlayX / overlayY are the fractional anchor of the text CENTER.
     final leftPx = (_overlayX * widget.canvasSize.width).clamp(0.0, widget.canvasSize.width);
@@ -177,7 +180,7 @@ class _DraggableTextOverlayWidgetState extends State<DraggableTextOverlayWidget>
                   widget.clip.title,
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    color: color,
+                    color: _textColor,
                     fontSize: (widget.clip.fontSize * 0.6).clamp(12.0, 36.0),
                     fontWeight: FontWeight.bold,
                     fontFamily: widget.clip.fontName,
