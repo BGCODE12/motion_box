@@ -9,7 +9,7 @@ import 'text_editor_modal.dart';
 /// in [TimelineClip], allowing the canvas to be any size and positions to remain
 /// correct across layouts.
 ///
-/// FIX NOTES:
+/// IMPLEMENTATION NOTES:
 /// 1. Wrapped in GestureDetector with HitTestBehavior.opaque so touches are
 ///    consumed BEFORE falling through to the VideoPlayer underneath.
 /// 2. Uses LayoutBuilder to convert pixel deltas into fractional deltas so
@@ -21,7 +21,7 @@ import 'text_editor_modal.dart';
 /// in [TimelineClip], allowing the canvas to be any size and positions to remain
 /// correct across layouts.
 ///
-/// PERFORMANCE & STATE FIX:
+/// PERFORMANCE & STATE NOTE:
 /// Converted to a StatefulWidget that maintains local [_overlayX] and [_overlayY]
 /// state updated via local [setState] during [onPanUpdate]. This produces butter-smooth
 /// 60fps dragging under the user's finger without requiring timeline scrubbing or
@@ -89,7 +89,7 @@ class _DraggableTextOverlayWidgetState extends State<DraggableTextOverlayWidget>
       left: leftPx - 100, // shift so the 200px-wide bubble is centered on the anchor
       top: topPx - 20,    // shift so text is centered vertically on the anchor
       child: GestureDetector(
-        // CRITICAL FIX: opaque means this GestureDetector claims the touch
+        // CRITICAL NOTE: opaque means this GestureDetector claims the touch
         // BEFORE it reaches the VideoPlayer below in the Stack.
         behavior: HitTestBehavior.opaque,
 
