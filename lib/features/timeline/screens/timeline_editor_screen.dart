@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../services/libre_cuts_service.dart';
@@ -129,10 +130,13 @@ class _TimelineEditorScreenState extends State<TimelineEditorScreen> {
       // for any file shorter than 15s, producing an unexpected export result.
       double durationMs = 15000.0; // Safe fallback
       try {
-        final probe = VideoPlayerController.file(File(path));
-        await probe.initialize();
-        durationMs = probe.value.duration.inMilliseconds.toDouble();
-        await probe.dispose();
+        final player = AudioPlayer();
+        await player.setSourceDeviceFile(path);
+        final duration = await player.getDuration();
+        if (duration != null) {
+          durationMs = duration.inMilliseconds.toDouble();
+        }
+        await player.dispose();
         debugPrint('=> [_pickAudioFile] Actual duration: ${durationMs.toStringAsFixed(0)} ms');
       } catch (e) {
         debugPrint('=> [_pickAudioFile] Could not probe duration, using fallback: $e');
