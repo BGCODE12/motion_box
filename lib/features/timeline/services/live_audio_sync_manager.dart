@@ -31,7 +31,8 @@ class LiveAudioSyncManager {
   // _syncAudioStreams is async (has awaits for player init/seek/play).
   // Without this, the 125ms timer can fire a second invocation before the
   // first completes, causing concurrent mutations of _audioPlayers map.
-  bool _isSyncing = false;
+  Future<void>? _activeSync;
+  bool get _isSyncing => _activeSync != null;
 
   LiveAudioSyncManager(this.controller) {
     _init();
@@ -86,13 +87,20 @@ class LiveAudioSyncManager {
 
   Future<void> _syncAudioStreams({required bool isForcedSync}) async {
     // BUG-08 FIX: Skip re-entrant calls. Forced syncs (play/pause/drag-end)
-    // are allowed to interrupt a polling sync; they set _isSyncing themselves.
-    if (_isSyncing && !isForcedSync) return;
-    _isSyncing = true;
+    // must wait for any active sync to finish to prevent concurrent execution.
+    while (_isSyncing) {
+      if (!isForcedSync) return;
+      await _activeSync;
+    }
+
+    final completer = Completer<void>();
+    _activeSync = completer.future;
+
     try {
       await _doSync(isForcedSync: isForcedSync);
     } finally {
-      _isSyncing = false;
+      _activeSync = null;
+      completer.complete();
     }
   }
 
