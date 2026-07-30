@@ -704,7 +704,6 @@ class TimelineController extends ChangeNotifier {
           '(${now.difference(_lastSplitTime!).inMilliseconds}ms since last split)');
       return;
     }
-    _lastSplitTime = now;
     // ── Normal split logic ─────────────────────────────────────────────────
     if (_selectedClipId == null) return;
     final playhead = currentPositionMs.value;
@@ -743,6 +742,7 @@ class TimelineController extends ChangeNotifier {
           ));
           _recalculateTotalDuration();
           notifyListeners();
+          _lastSplitTime = now;
           debugPrint('=> [splitClipAtPlayhead] Split "${clip.title}" at ${playhead.toStringAsFixed(0)}ms');
           return;
         }
