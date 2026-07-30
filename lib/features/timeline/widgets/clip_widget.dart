@@ -396,7 +396,9 @@ class _ClipWidgetState extends State<ClipWidget> {
                 border: Border(
                     right: BorderSide(color: Colors.black12, width: 0.5)),
               ),
-              child: path != null && File(path).existsSync()
+              // NOTE: ThumbnailManager already ensures file existence before adding to cache.
+              // We omit File(path).existsSync() here to avoid synchronous file I/O during 60fps layout/builds.
+              child: path != null
                   ? Image.file(File(path),
                       fit: BoxFit.cover,
                       // Bolt: Added cacheHeight to prevent decoding full-resolution frames into memory.
