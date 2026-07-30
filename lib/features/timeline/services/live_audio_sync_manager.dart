@@ -199,10 +199,13 @@ class LiveAudioSyncManager {
     _syncTimer = null;
     if (_controllerListener != null) {
       controller.removeListener(_controllerListener!);
+      _controllerListener = null;
     }
     // BUG-12 FIX: Clear the callback so the controller no longer holds
     // a reference to this (potentially already disposed) manager.
-    controller.clipDeletedCallback = null;
+    if (controller.clipDeletedCallback == forceSync) {
+      controller.clipDeletedCallback = null;
+    }
     for (final player in _audioPlayers.values) {
       // BUG-07 FIX: pause() is intentionally fire-and-forget here.
       // VideoPlayerController.dispose() tears down the ExoPlayer instance and
