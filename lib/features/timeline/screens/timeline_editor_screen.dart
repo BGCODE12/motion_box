@@ -87,7 +87,7 @@ class _TimelineEditorScreenState extends State<TimelineEditorScreen> {
       // BUG-06 FIX: Detach the old player from the controller BEFORE disposing it.
       // Without this, _onVideoPlayerTick listener fires into a disposed controller
       // on the next ExoPlayer callback — causing StateError: controller disposed.
-      _controller.detachVideoPlayer();
+      _controller.detachVideoPlayer(); // Detach to prevent StateError
       _videoPlayerController?.dispose();
       _videoPlayerController = VideoPlayerController.file(File(path));
       await _videoPlayerController!.initialize();
@@ -362,6 +362,8 @@ class _TimelineEditorScreenState extends State<TimelineEditorScreen> {
     // This prevents the callback from firing on a detached context after dispose.
     _exportProgressSub?.cancel();
     _audioSyncManager?.dispose();
+    // BUG-06 FIX: Detach the old player from the controller BEFORE disposing it.
+    _controller.detachVideoPlayer();
     _videoPlayerController?.dispose();
     _controller.dispose();
     super.dispose();
