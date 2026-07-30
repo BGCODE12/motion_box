@@ -72,6 +72,7 @@ class TimelineController extends ChangeNotifier {
 
   /// Register a callback that is fired synchronously inside deleteClip().
   /// Used by LiveAudioSyncManager to force an immediate audio player teardown.
+  VoidCallback? get clipDeletedCallback => _onClipDeleted;
   set clipDeletedCallback(VoidCallback? callback) => _onClipDeleted = callback;
 
   Timer? _playbackTicker;
