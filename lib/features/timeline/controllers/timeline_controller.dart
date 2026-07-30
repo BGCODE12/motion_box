@@ -598,13 +598,20 @@ class TimelineController extends ChangeNotifier {
     final oldStartMs        = clip.startMs;
     final oldMediaDuration  = clip.mediaDurationMs;
 
-    // Lower bound: 0 (can't trim before media start)
+    // BUG-01 FIX: Clamp to >= 0 so the clip can never be pushed before the origin.
+    // The maximum leftward shift (negative delta) is bounded by how much space is left
+    // before the timeline origin (0.0).
+    // clip.startMs + (actualDelta / clip.speed) >= 0  =>  actualDelta >= -clip.startMs * clip.speed
+    final minTrimStartForOrigin = clip.trimStartMs - (clip.startMs * clip.speed);
+
+    // Lower bound: max(0, minTrimStartForOrigin) (can't trim before media start OR before timeline origin)
     // Upper bound: trimEndMs - 200 (must leave at least 200ms of clip)
-    final newTrimStart = (clip.trimStartMs + deltaMs).clamp(0.0, clip.trimEndMs - 200.0);
+    final lowerBound = (minTrimStartForOrigin > 0.0) ? minTrimStartForOrigin : 0.0;
+
+    final newTrimStart = (clip.trimStartMs + deltaMs).clamp(lowerBound, clip.trimEndMs - 200.0);
     final actualDelta = newTrimStart - clip.trimStartMs;
 
     clip.trimStartMs = newTrimStart;
-    // BUG-01 FIX: Clamp to >= 0 so the clip can never be pushed before the origin.
     clip.startMs = (clip.startMs + actualDelta / clip.speed).clamp(0.0, double.infinity);
 
     debugPrint(
