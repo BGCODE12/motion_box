@@ -209,7 +209,7 @@ class LiveAudioSyncManager {
       // all pending operations atomically — the pause command is not needed
       // for correctness, only to silence logcat warnings on some OEM ROMs.
       unawaited(player.pause());
-      player.dispose();
+      unawaited(player.dispose());
     }
     _audioPlayers.clear();
     _loadedPaths.clear();
