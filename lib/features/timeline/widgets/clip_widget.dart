@@ -399,7 +399,8 @@ class _ClipWidgetState extends State<ClipWidget> {
               child: path != null && File(path).existsSync()
                   ? Image.file(File(path),
                       fit: BoxFit.cover,
-                      filterQuality: FilterQuality.low)
+                      filterQuality: FilterQuality.low,
+                      cacheHeight: 120) // ⚡ Bolt: limits memory footprint
                   : Container(color: colorVideoBody.withValues(alpha: 0.5)),
             );
           }).toList(),
