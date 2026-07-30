@@ -120,6 +120,8 @@ class TimelineController extends ChangeNotifier {
         for (final track in _tracks) {
           track.clips.removeWhere((c) => c.id == op.clip.id);
         }
+        // Notify audio manager immediately (BUG-12 guard).
+        _onClipDeleted?.call();
 
       case SplitOp():
         // Remove both halves and restore the original clip.
@@ -130,6 +132,8 @@ class TimelineController extends ChangeNotifier {
         track.clips.removeWhere(
           (c) => c.id == op.firstHalf.id || c.id == op.secondHalf.id,
         );
+        // Notify audio manager immediately (BUG-12 guard).
+        _onClipDeleted?.call();
         final idx = op.originalIndex.clamp(0, track.clips.length);
         track.clips.insert(idx, op.originalClip);
         _selectedClipId = op.originalClip.id;
@@ -180,7 +184,10 @@ class TimelineController extends ChangeNotifier {
         );
         final idx = track.clips.indexWhere((c) => c.id == op.originalClip.id);
         if (idx != -1) {
-          track.clips[idx] = op.firstHalf;
+          track.clips.removeAt(idx);
+          // Notify audio manager immediately (BUG-12 guard).
+          _onClipDeleted?.call();
+          track.clips.insert(idx, op.firstHalf);
           track.clips.insert(idx + 1, op.secondHalf);
           _selectedClipId = op.secondHalf.id;
         }
@@ -730,7 +737,10 @@ class TimelineController extends ChangeNotifier {
             trimStartMs: splitOffsetMediaMs,
           );
 
-          track.clips[index] = firstHalf;
+          track.clips.removeAt(index);
+          // Notify audio manager immediately (BUG-12 guard).
+          _onClipDeleted?.call();
+          track.clips.insert(index, firstHalf);
           track.clips.insert(index + 1, secondHalf);
           _selectedClipId = secondHalf.id;
 
@@ -775,6 +785,10 @@ class TimelineController extends ChangeNotifier {
     }
     if (_selectedClipId == clipId) _selectedClipId = null;
 
+    // Immediately notify audio manager — avoids the 125ms timer lag.
+    _onClipDeleted?.call();
+    debugPrint('=> [TimelineController] deleteClip: $clipId — audio teardown triggered immediately');
+
     if (foundClip != null) {
       _pushUndo(DeleteOp(
         trackId:   foundTrackId!,
@@ -785,10 +799,6 @@ class TimelineController extends ChangeNotifier {
 
     _recalculateTotalDuration();
     notifyListeners();
-
-    // Immediately notify audio manager — avoids the 125ms timer lag.
-    _onClipDeleted?.call();
-    debugPrint('=> [TimelineController] deleteClip: $clipId — audio teardown triggered immediately');
   }
 
   /// Add a clip to a specific track.
