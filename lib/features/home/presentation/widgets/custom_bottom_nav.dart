@@ -118,11 +118,17 @@ class CustomBottomNav extends StatelessWidget {
 class _NoisePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
+    // NOTE: Generating a list of points and making a single drawPoints call
+    // avoids making thousands of JNI/engine calls per frame.
     final random = math.Random();
     final paint = Paint()..color = Colors.white.withValues(alpha: 0.015)..strokeWidth = 1.0;
-    for (int i = 0; i < (size.width * size.height * 0.05).toInt(); i++) {
-      canvas.drawPoints(PointMode.points, [Offset(random.nextDouble() * size.width, random.nextDouble() * size.height)], paint);
-    }
+    final count = (size.width * size.height * 0.05).toInt();
+    final points = List<Offset>.generate(
+      count,
+      (_) => Offset(random.nextDouble() * size.width, random.nextDouble() * size.height),
+      growable: false,
+    );
+    canvas.drawPoints(PointMode.points, points, paint);
   }
 
   @override
