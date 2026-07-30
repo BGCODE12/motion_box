@@ -399,6 +399,9 @@ class _ClipWidgetState extends State<ClipWidget> {
               child: path != null && File(path).existsSync()
                   ? Image.file(File(path),
                       fit: BoxFit.cover,
+                      // Bolt: Added cacheHeight to prevent decoding full-resolution frames into memory.
+                      // 120px cache handles up to 3x device pixel ratio for the 40px container height.
+                      cacheHeight: 120,
                       filterQuality: FilterQuality.low)
                   : Container(color: colorVideoBody.withValues(alpha: 0.5)),
             );
